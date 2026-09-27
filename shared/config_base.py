@@ -9,7 +9,8 @@ load_dotenv()
 class SharedConfig:
     ADMIN_IDS: List[int] = field(default_factory=list)
     DATABASE_URL: str = os.getenv("DATABASE_URL", "") # e.g. postgresql://user:pass@host:5432/dbname or empty for SQLite
-    SQLITE_PATH: str = os.getenv("SQLITE_PATH", os.path.join(os.path.dirname(os.path.dirname(__file__)), "shared_empire.db"))
+    DEFAULT_SQLITE: str = "/tmp/shared_empire.db" if os.getenv("VERCEL") else os.path.join(os.path.dirname(os.path.dirname(__file__)), "shared_empire.db")
+    SQLITE_PATH: str = os.getenv("SQLITE_PATH", DEFAULT_SQLITE)
 
     # Monetization
     CRYPTO_PAY_TOKEN: str = os.getenv("CRYPTO_PAY_TOKEN", "")

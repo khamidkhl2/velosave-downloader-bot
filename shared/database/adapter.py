@@ -18,7 +18,10 @@ logger = logging.getLogger(__name__)
 class DatabaseAdapter:
     def __init__(self, db_url: str = "", sqlite_path: str = ""):
         self.db_url = db_url or shared_config.DATABASE_URL
-        self.sqlite_path = sqlite_path or shared_config.SQLITE_PATH
+        if os.getenv("VERCEL"):
+            self.sqlite_path = "/tmp/shared_empire.db"
+        else:
+            self.sqlite_path = sqlite_path or shared_config.SQLITE_PATH
         self.is_postgres = bool(self.db_url and ("postgres://" in self.db_url or "postgresql://" in self.db_url))
         self.pg_pool = None
 
