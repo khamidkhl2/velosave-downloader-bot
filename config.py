@@ -25,7 +25,7 @@ class DownloaderConfig:
     REFERRALS_FOR_VIP: int = int(os.getenv("REFERRALS_FOR_VIP", str(shared_config.REFERRALS_FOR_VIP)))
 
     # Download settings
-    TEMP_DIR: str = os.getenv("TEMP_DIR", str(BASE_DIR / "temp"))
+    TEMP_DIR: str = os.getenv("TEMP_DIR", "/tmp" if os.getenv("VERCEL") else str(BASE_DIR / "temp"))
     MAX_FILESIZE_BYTES: int = 50 * 1024 * 1024  # 50 MB Telegram limit
     MAX_VIDEO_HEIGHT: int = int(os.getenv("MAX_VIDEO_HEIGHT", "1080"))
 
