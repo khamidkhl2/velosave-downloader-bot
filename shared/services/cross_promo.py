@@ -57,6 +57,21 @@ class CrossPromoManager:
         return t("cross_tip", lang=lang, action=action_text, username=username)
 
     @staticmethod
+    def get_alternating_tip(current_bot_id: str, sequence_index: int, lang: str = "en") -> str:
+        """
+        Returns a promotional tip alternating deterministically across sister bots.
+        """
+        candidates = [b for b in FLEET_REGISTRY if b["id"] != current_bot_id]
+        if not candidates:
+            return ""
+        pick = candidates[sequence_index % len(candidates)]
+        username = getattr(shared_config, pick["username_attr"], "")
+        if not username:
+            return ""
+        action_text = pick.get(f"action_{lang}", pick["action_en"])
+        return t("cross_tip", lang=lang, action=action_text, username=username).strip()
+
+    @staticmethod
     def get_bots_keyboard(current_bot_id: str, lang: str = "en") -> InlineKeyboardMarkup:
         """
         Returns an inline keyboard with direct links to all other active sister bots.

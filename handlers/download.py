@@ -55,7 +55,6 @@ async def handle_url_message(message: Message):
     download_res = None
     try:
         download_res = await downloader_service.download(url)
-        footer = cross_promo.get_tip_footer("downloader", lang=lang)
 
         for item in download_res.items:
             size_mb = item.size_bytes / (1024 * 1024)
@@ -66,26 +65,8 @@ async def handle_url_message(message: Message):
                 )
                 continue
 
-            # Build clean caption
-            raw_title = (item.title or "").strip()
-            # Strip scraper artifacts like "Video by", "Post by", "TikTok video by", "video by [BLANK]"
-            cleaned_title = re.sub(r'^(?:video|post|photo|media)\s+by\s*[:\-]?\s*', '', raw_title, flags=re.IGNORECASE).strip()
-            cleaned_title = re.sub(r'^\[(?:blank|unknown|none)\]', '', cleaned_title, flags=re.IGNORECASE).strip()
-            if cleaned_title.lower() in ["video", "post", "tiktok", "instagram reel", "shorts", "reel", ""]:
-                cleaned_title = ""
-
-            caption_parts = []
-            if cleaned_title:
-                safe_title = html.escape(cleaned_title[:120])
-                caption_parts.append(f"🎬 <b>{safe_title}</b>\n")
-
-            caption_parts.append("📥 <b>Downloaded via @velo_save_bot</b>")
-            if footer:
-                caption_parts.append(footer.strip())
-
-            caption = "\n".join(caption_parts)
-            if len(caption) > 1024:
-                caption = caption[:1020] + "..."
+            # Clean caption with no author nicknames or titles
+            caption = "📥 <b>Downloaded via @velo_save_bot</b>"
 
             if item.media_type == "video":
                 await message.answer_video(
@@ -114,6 +95,14 @@ async def handle_url_message(message: Message):
             await status_msg.delete()
         except Exception:
             pass
+
+        # Track usage and send separate promotional tip 1 in 2 videos (every other video)
+        dl_count = await db.increment_daily_usage(user_id, "downloader")
+        if dl_count % 2 == 0:
+            seq_idx = (dl_count // 2) - 1
+            tip_msg = cross_promo.get_alternating_tip("downloader", sequence_index=seq_idx, lang=lang)
+            if tip_msg:
+                await message.answer(tip_msg, parse_mode="HTML")
 
     except FileSizeExceededError as e:
         logger.warning(f"File size exceeded for {url}: {e.size_mb:.1f} MB")
