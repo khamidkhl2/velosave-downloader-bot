@@ -83,7 +83,19 @@ class DatabaseAdapter:
                         status TEXT DEFAULT 'pending',
                         created_at BIGINT
                     );
+                    CREATE TABLE IF NOT EXISTS chat_history (
+                        id SERIAL PRIMARY KEY,
+                        user_id BIGINT NOT NULL,
+                        role TEXT NOT NULL,
+                        content TEXT NOT NULL,
+                        created_at BIGINT NOT NULL
+                    );
+                    CREATE TABLE IF NOT EXISTS user_personas (
+                        user_id BIGINT PRIMARY KEY,
+                        persona TEXT NOT NULL
+                    );
                     CREATE INDEX IF NOT EXISTS idx_bot_usage ON bot_usage(user_id, bot_name, date_str);
+                    CREATE INDEX IF NOT EXISTS idx_chat_history_user ON chat_history(user_id, created_at);
                 """)
         else:
             logger.info(f"Initializing SQLite database at: {self.sqlite_path}")
@@ -145,6 +157,24 @@ class DatabaseAdapter:
                         status TEXT DEFAULT 'pending',
                         created_at INTEGER
                     )
+                """)
+                await db.execute("""
+                    CREATE TABLE IF NOT EXISTS chat_history (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        user_id INTEGER NOT NULL,
+                        role TEXT NOT NULL,
+                        content TEXT NOT NULL,
+                        created_at INTEGER NOT NULL
+                    )
+                """)
+                await db.execute("""
+                    CREATE TABLE IF NOT EXISTS user_personas (
+                        user_id INTEGER PRIMARY KEY,
+                        persona TEXT NOT NULL
+                    )
+                """)
+                await db.execute("""
+                    CREATE INDEX IF NOT EXISTS idx_chat_history_user ON chat_history(user_id, created_at)
                 """)
                 await db.commit()
 
@@ -421,5 +451,96 @@ class DatabaseAdapter:
             "active_sponsors": active_sponsors,
             "today_actions": today_actions
         }
+
+    # ================= Chat Session & History Persistence =================
+    async def add_chat_message(self, user_id: int, role: str, content: str):
+        """Saves a single conversation turn (user or assistant) to persistent storage."""
+        now = int(time.time())
+        if self.is_postgres:
+            async with self.pg_pool.acquire() as conn:
+                await conn.execute(
+                    "INSERT INTO chat_history (user_id, role, content, created_at) VALUES ($1, $2, $3, $4)",
+                    user_id, role, content, now
+                )
+        else:
+            async with aiosqlite.connect(self.sqlite_path) as db:
+                await db.execute(
+                    "INSERT INTO chat_history (user_id, role, content, created_at) VALUES (?, ?, ?, ?)",
+                    (user_id, role, content, now)
+                )
+                await db.commit()
+
+    async def get_chat_history(self, user_id: int, limit: int = 10) -> List[Dict[str, str]]:
+        """Returns the most recent N conversation turns in chronological order."""
+        if self.is_postgres:
+            async with self.pg_pool.acquire() as conn:
+                rows = await conn.fetch(
+                    "SELECT role, content FROM chat_history WHERE user_id = $1 ORDER BY created_at DESC LIMIT $2",
+                    user_id, limit
+                )
+                return [{"role": r["role"], "content": r["content"]} for r in reversed(rows)]
+        else:
+            async with aiosqlite.connect(self.sqlite_path) as db:
+                cursor = await db.execute(
+                    "SELECT role, content FROM chat_history WHERE user_id = ? ORDER BY created_at DESC LIMIT ?",
+                    (user_id, limit)
+                )
+                rows = await cursor.fetchall()
+                return [{"role": r[0], "content": r[1]} for r in reversed(rows)]
+
+    async def clear_chat_history(self, user_id: int) -> int:
+        """Deletes all conversation history for the user and returns count of deleted turns."""
+        count = 0
+        if self.is_postgres:
+            async with self.pg_pool.acquire() as conn:
+                count = await conn.fetchval("SELECT COUNT(*) FROM chat_history WHERE user_id = $1", user_id) or 0
+                await conn.execute("DELETE FROM chat_history WHERE user_id = $1", user_id)
+        else:
+            async with aiosqlite.connect(self.sqlite_path) as db:
+                cursor = await db.execute("SELECT COUNT(*) FROM chat_history WHERE user_id = ?", (user_id,))
+                row = await cursor.fetchone()
+                count = row[0] if row else 0
+                await db.execute("DELETE FROM chat_history WHERE user_id = ?", (user_id,))
+                await db.commit()
+        return count
+
+    async def get_chat_message_count(self, user_id: int) -> int:
+        """Returns current number of saved messages for user."""
+        if self.is_postgres:
+            async with self.pg_pool.acquire() as conn:
+                return await conn.fetchval("SELECT COUNT(*) FROM chat_history WHERE user_id = $1", user_id) or 0
+        else:
+            async with aiosqlite.connect(self.sqlite_path) as db:
+                cursor = await db.execute("SELECT COUNT(*) FROM chat_history WHERE user_id = ?", (user_id,))
+                row = await cursor.fetchone()
+                return row[0] if row else 0
+
+    async def set_user_persona(self, user_id: int, persona: str):
+        """Persists the user's selected AI persona."""
+        if self.is_postgres:
+            async with self.pg_pool.acquire() as conn:
+                await conn.execute(
+                    "INSERT INTO user_personas (user_id, persona) VALUES ($1, $2) ON CONFLICT (user_id) DO UPDATE SET persona = EXCLUDED.persona",
+                    user_id, persona
+                )
+        else:
+            async with aiosqlite.connect(self.sqlite_path) as db:
+                await db.execute(
+                    "INSERT INTO user_personas (user_id, persona) VALUES (?, ?) ON CONFLICT(user_id) DO UPDATE SET persona = excluded.persona",
+                    (user_id, persona)
+                )
+                await db.commit()
+
+    async def get_user_persona(self, user_id: int) -> str:
+        """Retrieves user's active persona or returns default 'general'."""
+        if self.is_postgres:
+            async with self.pg_pool.acquire() as conn:
+                val = await conn.fetchval("SELECT persona FROM user_personas WHERE user_id = $1", user_id)
+                return val or "general"
+        else:
+            async with aiosqlite.connect(self.sqlite_path) as db:
+                cursor = await db.execute("SELECT persona FROM user_personas WHERE user_id = ?", (user_id,))
+                row = await cursor.fetchone()
+                return row[0] if (row and row[0]) else "general"
 
 db = DatabaseAdapter()

@@ -25,10 +25,10 @@ class SharedConfig:
 
     # Sister Bot Usernames for Cross-Promotion (customizable in .env)
     BOT_USERNAME_TTS: str = os.getenv("BOT_USERNAME_TTS", "VoxifyVoiceBot")
-    BOT_USERNAME_DOWNLOADER: str = os.getenv("BOT_USERNAME_DOWNLOADER", "SaveFlowBot")
-    BOT_USERNAME_CHAT: str = os.getenv("BOT_USERNAME_CHAT", "NexaChatBot")
-    BOT_USERNAME_IMAGE: str = os.getenv("BOT_USERNAME_IMAGE", "PixelCraftBot")
-    BOT_USERNAME_UTILITY: str = os.getenv("BOT_USERNAME_UTILITY", "QuickToolsBot")
+    BOT_USERNAME_DOWNLOADER: str = os.getenv("BOT_USERNAME_DOWNLOADER", "velo_save_bot")
+    BOT_USERNAME_CHAT: str = os.getenv("BOT_USERNAME_CHAT", "lumichat_ai_bot")
+    BOT_USERNAME_IMAGE: str = os.getenv("BOT_USERNAME_IMAGE", "")
+    BOT_USERNAME_UTILITY: str = os.getenv("BOT_USERNAME_UTILITY", "")
 
     # API Keys for AI
     GROQ_API_KEY: str = os.getenv("GROQ_API_KEY", "")

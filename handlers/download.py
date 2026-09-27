@@ -66,9 +66,24 @@ async def handle_url_message(message: Message):
                 )
                 continue
 
-            # Build caption safely
-            safe_title = html.escape(item.title) if item.title else ""
-            caption = f"🎬 <b>{safe_title}</b>{footer}" if safe_title else footer.strip()
+            # Build clean caption
+            raw_title = (item.title or "").strip()
+            # Strip scraper artifacts like "Video by", "Post by", "TikTok video by", "video by [BLANK]"
+            cleaned_title = re.sub(r'^(?:video|post|photo|media)\s+by\s*[:\-]?\s*', '', raw_title, flags=re.IGNORECASE).strip()
+            cleaned_title = re.sub(r'^\[(?:blank|unknown|none)\]', '', cleaned_title, flags=re.IGNORECASE).strip()
+            if cleaned_title.lower() in ["video", "post", "tiktok", "instagram reel", "shorts", "reel", ""]:
+                cleaned_title = ""
+
+            caption_parts = []
+            if cleaned_title:
+                safe_title = html.escape(cleaned_title[:120])
+                caption_parts.append(f"🎬 <b>{safe_title}</b>\n")
+
+            caption_parts.append("📥 <b>Downloaded via @velo_save_bot</b>")
+            if footer:
+                caption_parts.append(footer.strip())
+
+            caption = "\n".join(caption_parts)
             if len(caption) > 1024:
                 caption = caption[:1020] + "..."
 

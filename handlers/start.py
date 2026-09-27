@@ -46,7 +46,7 @@ async def cmd_start(message: Message):
     welcome_text = t(
         "welcome",
         lang=lang,
-        bot_name="SaveFlow",
+        bot_name="VeloSave",
         bot_desc=t("downloader_desc", lang=lang)
     )
 
@@ -65,7 +65,7 @@ async def cmd_help(message: Message):
     help_text = t(
         "help",
         lang=lang,
-        bot_name="SaveFlow",
+        bot_name="VeloSave",
         bot_help=t("downloader_help", lang=lang)
     )
     await message.answer(help_text, parse_mode="HTML")

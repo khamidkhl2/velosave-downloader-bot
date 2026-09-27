@@ -5,7 +5,7 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from shared.config_base import shared_config
 from shared.services.i18n_base import t
 
-# Directory of sister bots
+# Directory of sister bots (only active, owned bots)
 FLEET_REGISTRY = [
     {
         "id": "tts",
@@ -36,26 +36,6 @@ FLEET_REGISTRY = [
         "action_ru": "задавать любые вопросы, писать тексты или код",
         "action_uz": "savollarga javob olish yoki matn yozdirish",
         "action_es": "hacer preguntas, redactar o resolver tareas"
-    },
-    {
-        "id": "image",
-        "name": "PixelCraft",
-        "username_attr": "BOT_USERNAME_IMAGE",
-        "btn_key": "bots_btn_image",
-        "action_en": "generate stunning AI images & avatars",
-        "action_ru": "создавать крутые арты и аватары через ИИ",
-        "action_uz": "chiroyli AI rasm va avatarlar yaratish",
-        "action_es": "crear increíbles imágenes y avatares con IA"
-    },
-    {
-        "id": "utility",
-        "name": "QuickTools",
-        "username_attr": "BOT_USERNAME_UTILITY",
-        "btn_key": "bots_btn_utility",
-        "action_en": "remove image backgrounds or compress video",
-        "action_ru": "удалить фон с фото или сжать видео",
-        "action_uz": "rasm fonini o'chirish yoki videoni qisqartirish",
-        "action_es": "quitar fondos de imágenes o comprimir vídeo"
     }
 ]
 

@@ -64,11 +64,11 @@ async def callback_check_sponsors(callback: CallbackQuery):
 @router.callback_query(F.data == "buy_vip_stars")
 async def callback_buy_vip_stars(callback: CallbackQuery):
     user_id = callback.from_user.id
-    prices = [LabeledPrice(label="SaveFlow VIP Pass (30 Days)", amount=config.VIP_PRICE_STARS)]
+    prices = [LabeledPrice(label="VeloSave VIP Pass (30 Days)", amount=config.VIP_PRICE_STARS)]
 
     await callback.bot.send_invoice(
         chat_id=callback.message.chat.id,
-        title="⭐ SaveFlow 30-Day VIP Pass",
+        title="⭐ VeloSave 30-Day VIP Pass",
         description="Unlimited downloads, zero ads, bypass all sponsor requirements.",
         payload=f"vip_{user_id}",
         currency="XTR",
