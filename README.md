@@ -1,6 +1,6 @@
-# SaveFlow — Universal Social Media Downloader Bot
+# VeloSave — Universal Social Media Downloader Bot
 
-SaveFlow is a high-speed Telegram bot for downloading media from Instagram, TikTok (without watermark), YouTube (Shorts & Videos up to 1080p), and Pinterest.
+**VeloSave** ([@velo_save_bot](https://t.me/velo_save_bot)) is a high-speed Telegram bot for downloading media from Instagram, TikTok (without watermark), YouTube (Shorts & Videos up to 1080p), and Pinterest.
 
 Part of the **Telegram Empire Network**, it seamlessly integrates with the shared user database, sponsor subscription verification gate, Telegram Stars VIP monetization, and sister bot cross-promotion.
 
@@ -15,11 +15,12 @@ Part of the **Telegram Empire Network**, it seamlessly integrates with the share
   - **Pinterest**: Video pins and full-resolution images.
 - **Strict File Size Verification**: Automatically verifies that media is $\le 50\text{ MB}$ (Telegram Bot API limit) before transmission.
 - **Isolated Temporary Storage & Auto Cleanup**: Each download runs in an isolated directory with guaranteed cleanup to prevent disk bloat.
+- **Clean Branded Captions**: Every downloaded video displays clean branding: `📥 Downloaded via @velo_save_bot` with zero author nicknames or scraper tags.
 - **Monetization & Growth**:
   - **Sponsor Gate**: Enforces partner channel subscriptions for free users (VIPs bypass automatically).
   - **Telegram Stars VIP**: 30-day VIP pass purchased with Stars via native Telegram Invoices.
   - **Viral Referral System**: Users earn 30 days of VIP for inviting 3 friends.
-  - **Cross-Promotion**: Appends non-intrusive tip footers promoting sister bots (`Voxify`, `QuickTools`, `NexaChat`, `PixelCraft`).
+  - **Alternating Follow-up Tips**: 1 in 2 videos sends a separate follow-up tip alternating between LumiChat (`@lumichat_ai_bot`) and Voxify (`@VoxifyVoiceBot`).
 - **Multi-Language Support**: Fully localized in English (🇬🇧), Russian (🇷🇺), Uzbek (🇺🇿), and Spanish (🇪🇸).
 
 ---
