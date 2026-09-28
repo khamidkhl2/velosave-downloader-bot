@@ -8,7 +8,7 @@ from shared.database.adapter import db
 from shared.services.i18n_base import t
 from shared.services.sponsor_service import sponsor_service
 from shared.services.cross_promo import cross_promo
-from shared.keyboards.common import get_sponsor_inline_keyboard
+from shared.keyboards.common import get_sponsor_inline_keyboard, get_media_action_keyboard
 from services.downloader import downloader_service, FileSizeExceededError, MediaDownloadError
 
 logger = logging.getLogger(__name__)
@@ -56,6 +56,10 @@ async def handle_url_message(message: Message):
     try:
         download_res = await downloader_service.download(url)
 
+        # Determine VIP status for monetization button
+        is_vip = bool(user and user.get("is_vip"))
+        media_kb = None if is_vip else get_media_action_keyboard(lang=lang)
+
         for item in download_res.items:
             size_mb = item.size_bytes / (1024 * 1024)
             if size_mb > 50.0:
@@ -76,19 +80,22 @@ async def handle_url_message(message: Message):
                     supports_streaming=True,
                     duration=item.duration,
                     width=item.width,
-                    height=item.height
+                    height=item.height,
+                    reply_markup=media_kb
                 )
             elif item.media_type == "photo":
                 await message.answer_photo(
                     photo=FSInputFile(item.file_path),
                     caption=caption,
-                    parse_mode="HTML"
+                    parse_mode="HTML",
+                    reply_markup=media_kb
                 )
             elif item.media_type == "audio":
                 await message.answer_audio(
                     audio=FSInputFile(item.file_path),
                     caption=caption,
-                    parse_mode="HTML"
+                    parse_mode="HTML",
+                    reply_markup=media_kb
                 )
 
         try:

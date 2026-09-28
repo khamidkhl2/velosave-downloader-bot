@@ -37,6 +37,23 @@ class SharedConfig:
     FALLBACK_AD_TEXT: str = os.getenv("FALLBACK_AD_TEXT", "📢 Boost your Telegram channel with real active subscribers! Tap here")
     FALLBACK_AD_URL: str = os.getenv("FALLBACK_AD_URL", "https://t.me/CryptoBot")
 
+    # CPA / Affiliate Partner Button (Configurable in .env)
+    CPA_BUTTON_TEXT_EN: str = os.getenv("CPA_BUTTON_TEXT_EN", "🛡 High-Speed & Secure VPN (70% Off)")
+    CPA_BUTTON_TEXT_RU: str = os.getenv("CPA_BUTTON_TEXT_RU", "🛡 Скоростной VPN (Скидка 70%)")
+    CPA_BUTTON_TEXT_UZ: str = os.getenv("CPA_BUTTON_TEXT_UZ", "🛡 Tezkor va Xavfsiz VPN (-70%)")
+    CPA_BUTTON_TEXT_ES: str = os.getenv("CPA_BUTTON_TEXT_ES", "🛡 VPN Rápida y Segura (-70%)")
+    CPA_BUTTON_URL: str = os.getenv("CPA_BUTTON_URL", "https://t.me/CryptoBot")
+
+    def get_cpa_button_text(self, lang: str = "en") -> str:
+        lang = (lang or "en").lower()
+        if lang == "ru":
+            return self.CPA_BUTTON_TEXT_RU
+        elif lang == "uz":
+            return self.CPA_BUTTON_TEXT_UZ
+        elif lang == "es":
+            return self.CPA_BUTTON_TEXT_ES
+        return self.CPA_BUTTON_TEXT_EN
+
     def __post_init__(self):
         admin_str = os.getenv("ADMIN_IDS", "5831301324")
         self.ADMIN_IDS = [int(x.strip()) for x in admin_str.split(",") if x.strip().isdigit()]

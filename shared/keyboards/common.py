@@ -48,3 +48,18 @@ def get_vip_inline_keyboard(stars: int, lang: str = "en") -> InlineKeyboardMarku
         [InlineKeyboardButton(text=t("btn_referral", lang=lang), callback_data="view_referral")]
     ]
     return InlineKeyboardMarkup(inline_keyboard=buttons)
+
+def get_media_action_keyboard(lang: str = "en") -> InlineKeyboardMarkup:
+    """Returns monetization and cross-promo buttons attached beneath downloaded media."""
+    from shared.config_base import shared_config
+    cpa_text = shared_config.get_cpa_button_text(lang)
+    cpa_url = shared_config.CPA_BUTTON_URL
+    buttons = [
+        [InlineKeyboardButton(text=cpa_text, url=cpa_url)],
+        [
+            InlineKeyboardButton(text=t("btn_vip", lang=lang), callback_data="buy_vip_stars"),
+            InlineKeyboardButton(text=t("btn_bots", lang=lang), callback_data="open_bots_menu")
+        ]
+    ]
+    return InlineKeyboardMarkup(inline_keyboard=buttons)
+

@@ -5,6 +5,7 @@ from aiogram.types import CallbackQuery, Message, PreCheckoutQuery, LabeledPrice
 from shared.database.adapter import db
 from shared.services.i18n_base import t
 from shared.services.sponsor_service import sponsor_service
+from shared.services.cross_promo import cross_promo
 from shared.keyboards.common import (
     get_main_reply_keyboard,
     get_sponsor_inline_keyboard
@@ -112,3 +113,16 @@ async def process_successful_payment(message: Message):
             t("vip_success", lang=lang),
             parse_mode="HTML"
         )
+
+@router.callback_query(F.data == "open_bots_menu")
+async def callback_open_bots_menu(callback: CallbackQuery):
+    user = await db.get_user(callback.from_user.id)
+    lang = user.get("language", "en") if user else "en"
+    kb = cross_promo.get_bots_keyboard(current_bot_id="downloader", lang=lang)
+    await callback.message.answer(
+        t("bots_menu_title", lang=lang),
+        reply_markup=kb,
+        parse_mode="HTML"
+    )
+    await callback.answer()
+

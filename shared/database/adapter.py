@@ -77,6 +77,9 @@ class DatabaseAdapter:
                         invoice_id TEXT PRIMARY KEY,
                         user_id BIGINT NOT NULL,
                         bot_name TEXT,
+                        channel_id TEXT,
+                        channel_title TEXT,
+                        invite_link TEXT,
                         target_subs INT DEFAULT 0,
                         amount_usd REAL NOT NULL,
                         pay_url TEXT,
@@ -151,6 +154,9 @@ class DatabaseAdapter:
                         invoice_id TEXT PRIMARY KEY,
                         user_id INTEGER NOT NULL,
                         bot_name TEXT,
+                        channel_id TEXT,
+                        channel_title TEXT,
+                        invite_link TEXT,
                         target_subs INTEGER DEFAULT 0,
                         amount_usd REAL NOT NULL,
                         pay_url TEXT,
@@ -158,6 +164,11 @@ class DatabaseAdapter:
                         created_at INTEGER
                     )
                 """)
+                for col in ["channel_id TEXT", "channel_title TEXT", "invite_link TEXT"]:
+                    try:
+                        await db.execute(f"ALTER TABLE invoices ADD COLUMN {col}")
+                    except Exception:
+                        pass
                 await db.execute("""
                     CREATE TABLE IF NOT EXISTS chat_history (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -543,4 +554,71 @@ class DatabaseAdapter:
                 row = await cursor.fetchone()
                 return row[0] if (row and row[0]) else "general"
 
+    async def create_invoice_record(
+        self,
+        invoice_id: str,
+        user_id: int,
+        channel_id: str = "",
+        channel_title: str = "",
+        invite_link: str = "",
+        target_subs: int = 0,
+        amount_usd: float = 0.0,
+        pay_url: str = "",
+        bot_name: str = ""
+    ):
+        """Creates an invoice record for automated sponsor or VIP sales."""
+        now = int(time.time())
+        if self.is_postgres:
+            async with self.pg_pool.acquire() as conn:
+                await conn.execute("""
+                    INSERT INTO invoices (invoice_id, user_id, bot_name, channel_id, channel_title, invite_link, target_subs, amount_usd, pay_url, status, created_at)
+                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, 'pending', $10)
+                    ON CONFLICT (invoice_id) DO NOTHING
+                """, invoice_id, user_id, bot_name, channel_id, channel_title, invite_link, target_subs, amount_usd, pay_url, now)
+        else:
+            async with aiosqlite.connect(self.sqlite_path) as db:
+                await db.execute("""
+                    INSERT OR IGNORE INTO invoices (invoice_id, user_id, bot_name, channel_id, channel_title, invite_link, target_subs, amount_usd, pay_url, status, created_at)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?)
+                """, (invoice_id, user_id, bot_name, channel_id, channel_title, invite_link, target_subs, amount_usd, pay_url, now))
+                await db.commit()
+
+    async def mark_invoice_paid(self, invoice_id: str) -> Optional[Dict[str, Any]]:
+        """Marks invoice as paid and automatically activates the channel in sponsors table."""
+        now = int(time.time())
+        if self.is_postgres:
+            async with self.pg_pool.acquire() as conn:
+                row = await conn.fetchrow("SELECT * FROM invoices WHERE invoice_id = $1", invoice_id)
+                if row and row["status"] != "paid":
+                    await conn.execute("UPDATE invoices SET status = 'paid' WHERE invoice_id = $1", invoice_id)
+                    inv = dict(row)
+                    if inv.get("channel_id") and inv.get("target_subs", 0) > 0:
+                        ch_id = inv["channel_id"]
+                        ch_user = ch_id if ch_id.startswith("@") else None
+                        await conn.execute("""
+                            INSERT INTO sponsors (channel_id, channel_username, title, invite_link, target_subs, delivered_subs, is_active, owner_id, created_at)
+                            VALUES ($1, $2, $3, $4, $5, 0, 1, $6, $7)
+                        """, ch_id, ch_user, inv.get("channel_title") or "Sponsored Channel", inv.get("invite_link") or "", inv.get("target_subs", 0), inv.get("user_id", 0), now)
+                    return inv
+                return None
+        else:
+            async with aiosqlite.connect(self.sqlite_path) as db:
+                db.row_factory = aiosqlite.Row
+                cursor = await db.execute("SELECT * FROM invoices WHERE invoice_id = ?", (invoice_id,))
+                row = await cursor.fetchone()
+                if row and row["status"] != "paid":
+                    inv = dict(row)
+                    await db.execute("UPDATE invoices SET status = 'paid' WHERE invoice_id = ?", (invoice_id,))
+                    if inv.get("channel_id") and inv.get("target_subs", 0) > 0:
+                        ch_id = inv["channel_id"]
+                        ch_user = ch_id if ch_id.startswith("@") else None
+                        await db.execute("""
+                            INSERT INTO sponsors (channel_id, channel_username, title, invite_link, target_subs, delivered_subs, is_active, owner_id, created_at)
+                            VALUES (?, ?, ?, ?, ?, 0, 1, ?, ?)
+                        """, (ch_id, ch_user, inv.get("channel_title") or "Sponsored Channel", inv.get("invite_link") or "", inv.get("target_subs", 0), inv.get("user_id", 0), now))
+                    await db.commit()
+                    return inv
+                return None
+
 db = DatabaseAdapter()
+
