@@ -1,5 +1,6 @@
 import logging
 from aiogram import Router, F
+from aiogram.filters import Command
 from aiogram.types import CallbackQuery, Message, PreCheckoutQuery, LabeledPrice
 
 from shared.database.adapter import db
@@ -8,7 +9,8 @@ from shared.services.sponsor_service import sponsor_service
 from shared.services.cross_promo import cross_promo
 from shared.keyboards.common import (
     get_main_reply_keyboard,
-    get_sponsor_inline_keyboard
+    get_sponsor_inline_keyboard,
+    get_advertise_inline_keyboard
 )
 from config import config
 
@@ -125,4 +127,23 @@ async def callback_open_bots_menu(callback: CallbackQuery):
         parse_mode="HTML"
     )
     await callback.answer()
+
+@router.message(Command("advertise"))
+@router.message(Command("sponsor"))
+async def cmd_advertise(message: Message):
+    user = await db.get_user(message.from_user.id)
+    lang = user.get("language", "en") if user else "en"
+    text = t("advertise_title", lang=lang)
+    kb = get_advertise_inline_keyboard(lang=lang)
+    await message.answer(text, reply_markup=kb, parse_mode="HTML")
+
+@router.callback_query(F.data == "open_advertise")
+async def callback_open_advertise(callback: CallbackQuery):
+    user = await db.get_user(callback.from_user.id)
+    lang = user.get("language", "en") if user else "en"
+    text = t("advertise_title", lang=lang)
+    kb = get_advertise_inline_keyboard(lang=lang)
+    await callback.message.answer(text, reply_markup=kb, parse_mode="HTML")
+    await callback.answer()
+
 

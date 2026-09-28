@@ -48,7 +48,9 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "util_bg_result": "✅ <b>Background Removed!</b>\nSaved as transparent PNG.",
         "util_compress_result": "✅ <b>Video Compressed!</b>\nOriginal: {orig_mb:.1f} MB ➔ Compressed: {new_mb:.1f} MB ({ratio}% saved)",
         "util_file_too_large": "⚠️ <b>File Too Large</b>\nThe file exceeds the 50 MB limit.",
-        "util_action_expired": "⚠️ This request has expired. Please re-send your video."
+        "util_action_expired": "⚠️ This request has expired. Please re-send your video.",
+        "advertise_title": "📢 <b>Telegram Channel Promotion & Growth (ОП)</b>\n\nGrow your Telegram channel with guaranteed, real active subscribers via <b>Mandatory Subscription (ОП)</b> across our bot network:\n• @velo_save_bot (Media Downloader)\n• @lumichat_ai_bot (AI Smart Assistant)\n• @VoxifyVoiceBot (AI Voice Generator)\n\n💎 <b>Packages & Pricing:</b>\n🔹 <b>1,000 Verified Subscribers:</b> $35 (350,000 UZS)\n🔹 <b>5,000 Verified Subscribers:</b> $150 (1,500,000 UZS)\n🔹 <b>10,000 Verified Subscribers:</b> $270 (2,700,000 UZS)\n🔹 <b>In-Bot Broadcast Ad:</b> $20 / message\n\n🛡 <b>100% Guaranteed:</b> Your channel is set as a mandatory subscription gate until your exact target subscriber count is delivered.\n\n👇 Tap below to message the owner directly and launch your campaign:",
+        "advertise_btn_contact": "💬 Contact Owner @{admin}"
     },
     "ru": {
         "welcome": "👋 <b>Добро пожаловать в {bot_name}!</b>\n\n{bot_desc}\n\n👇 Отправьте запрос ниже, чтобы начать!",
@@ -97,7 +99,9 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "util_bg_result": "✅ <b>Фон успешно удален!</b>\nОтправлено как прозрачный PNG.",
         "util_compress_result": "✅ <b>Видео сжато!</b>\nБыло: {orig_mb:.1f} МБ ➔ Стало: {new_mb:.1f} МБ (экономия {ratio}%)",
         "util_file_too_large": "⚠️ <b>Файл слишком большой</b>\nФайл превышает лимит в 50 МБ.",
-        "util_action_expired": "⚠️ Срок действия действия истёк. Пожалуйста, отправьте видео снова."
+        "util_action_expired": "⚠️ Срок действия действия истёк. Пожалуйста, отправьте видео снова.",
+        "advertise_title": "📢 <b>Продвижение каналов и Реклама (ОП)</b>\n\nПривлекайте реальных, живых подписчиков в ваш Telegram-канал через <b>Обязательную Подписку (ОП)</b> в нашей сети ботов:\n• @velo_save_bot (Скачивание видео TikTok/Insta/YT)\n• @lumichat_ai_bot (Умный ИИ помощник)\n• @VoxifyVoiceBot (Озвучка текста нейросетью)\n\n💎 <b>Пакеты и Цены:</b>\n🔹 <b>1 000 подписчиков:</b> $35 (350 000 сум / 3 200 руб)\n🔹 <b>5 000 подписчиков:</b> $150 (1 500 000 сум / 13 800 руб)\n🔹 <b>10 000 подписчиков:</b> $270 (2 700 000 сум / 25 000 руб)\n🔹 <b>Рассылка по базе ботов:</b> $20 / сообщение\n\n🛡 <b>100% Гарантия объёма:</b> Канал ставится обязательным условием для доступа к боту, пока счётчик подписчиков не будет выполнен полностью.\n\n👇 Нажмите кнопку ниже, чтобы забронировать место у владельца сети:",
+        "advertise_btn_contact": "💬 Написать владельцу @{admin}"
     },
     "uz": {
         "welcome": "👋 <b>{bot_name} botiga xush kelibsiz!</b>\n\n{bot_desc}\n\n👇 Boshlash uchun so'rovingizni yuboring!",
@@ -146,7 +150,9 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "util_bg_result": "✅ <b>Fon o'chirildi!</b>\nShaffof PNG shaklida saqlandi.",
         "util_compress_result": "✅ <b>Video siqildi!</b>\nOldin: {orig_mb:.1f} MB ➔ Keyin: {new_mb:.1f} MB ({ratio}% tejaldi)",
         "util_file_too_large": "⚠️ <b>Fayl juda katta</b>\nFayl hajmi 50 MB limitidan oshadi.",
-        "util_action_expired": "⚠️ Ushbu amal eskirgan. Iltimos, videoni qaytadan yuboring."
+        "util_action_expired": "⚠️ Ushbu amal eskirgan. Iltimos, videoni qaytadan yuboring.",
+        "advertise_title": "📢 <b>Telegram Kanalni Rivojlantirish va Reklama (Majburiy Obuna)</b>\n\nTelegram kanalingizga botlar tarmog'imiz orqali kafolatlangan, faol va tirik obunachilarni jalb qiling:\n• @velo_save_bot (Video yuklovchi bot)\n• @lumichat_ai_bot (Aqlli AI yordamchi)\n• @VoxifyVoiceBot (Ovoz beruvchi AI bot)\n\n💎 <b>Paketlar va Narxlar:</b>\n🔹 <b>1 000 obunachi:</b> $35 (350 000 so'm)\n🔹 <b>5 000 obunachi:</b> $150 (1 500 000 so'm)\n🔹 <b>10 000 obunachi:</b> $270 (2 700 000 so'm)\n🔹 <b>Bot foydalanuvchilariga xabar tarqatish:</b> $20 / xabar\n\n🛡 <b>100% Kafolat:</b> Kanalingiz foydalanuvchilar obuna bo'lmaguncha botdan foydalanishni cheklovchi hamkor kanal sifatida joylanadi.\n\n👇 Buyurtma berish uchun tarmoq egasi bilan bog'laning:",
+        "advertise_btn_contact": "💬 Egasi bilan bog'lanish @{admin}"
     },
     "es": {
         "welcome": "👋 <b>¡Bienvenido a {bot_name}!</b>\n\n{bot_desc}\n\n👇 ¡Envía tu mensaje o archivo abajo para comenzar!",
@@ -195,7 +201,9 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "util_bg_result": "✅ <b>¡Fondo eliminado!</b>\nGuardado como PNG transparente.",
         "util_compress_result": "✅ <b>¡Vídeo comprimido!</b>\nOriginal: {orig_mb:.1f} MB ➔ Comprimido: {new_mb:.1f} MB ({ratio}% reducido)",
         "util_file_too_large": "⚠️ <b>Archivo demasiado grande</b>\nEl archivo supera el límite de 50 MB.",
-        "util_action_expired": "⚠️ Esta solicitud ha caducado. Vuelve a enviar el vídeo."
+        "util_action_expired": "⚠️ Esta solicitud ha caducado. Vuelve a enviar el vídeo.",
+        "advertise_title": "📢 <b>Promoción y Publicidad de Canales (Suscripción Obligatoria)</b>\n\nAtrae suscriptores reales y activos a tu canal de Telegram mediante la <b>Suscripción Obligatoria (ОП)</b> en nuestra red de bots:\n• @velo_save_bot (Descargador de vídeos)\n• @lumichat_ai_bot (Asistente Inteligente IA)\n• @VoxifyVoiceBot (Generador de Voz IA)\n\n💎 <b>Paquetes y Precios:</b>\n🔹 <b>1.000 Suscriptores Verificados:</b> $35 (350.000 UZS)\n🔹 <b>5.000 Suscriptores Verificados:</b> $150 (1.500.000 UZS)\n🔹 <b>10.000 Suscriptores Verificados:</b> $270 (2.700.000 UZS)\n🔹 <b>Mensaje de Difusión en Bots:</b> $20 / mensaje\n\n🛡 <b>100% Garantizado:</b> Tu canal se establece como puerta de suscripción obligatoria hasta alcanzar la cantidad exacta de suscriptores solicitada.\n\n👇 Pulsa abajo para contactar directamente con el dueño y reservar:",
+        "advertise_btn_contact": "💬 Contactar con el Dueño @{admin}"
     }
 }
 

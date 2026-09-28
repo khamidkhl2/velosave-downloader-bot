@@ -34,15 +34,18 @@ class SharedConfig:
     GROQ_API_KEY: str = os.getenv("GROQ_API_KEY", "")
 
     # Fallback ad link if no active sponsor is found
-    FALLBACK_AD_TEXT: str = os.getenv("FALLBACK_AD_TEXT", "📢 Boost your Telegram channel with real active subscribers! Tap here")
-    FALLBACK_AD_URL: str = os.getenv("FALLBACK_AD_URL", "https://t.me/CryptoBot")
+    FALLBACK_AD_TEXT: str = os.getenv("FALLBACK_AD_TEXT", "📢 Boost your Telegram channel with real active subscribers! Contact @khamidkhl")
+    FALLBACK_AD_URL: str = os.getenv("FALLBACK_AD_URL", "https://t.me/khamidkhl")
 
-    # CPA / Affiliate Partner Button (Configurable in .env)
-    CPA_BUTTON_TEXT_EN: str = os.getenv("CPA_BUTTON_TEXT_EN", "🛡 High-Speed & Secure VPN (70% Off)")
-    CPA_BUTTON_TEXT_RU: str = os.getenv("CPA_BUTTON_TEXT_RU", "🛡 Скоростной VPN (Скидка 70%)")
-    CPA_BUTTON_TEXT_UZ: str = os.getenv("CPA_BUTTON_TEXT_UZ", "🛡 Tezkor va Xavfsiz VPN (-70%)")
-    CPA_BUTTON_TEXT_ES: str = os.getenv("CPA_BUTTON_TEXT_ES", "🛡 VPN Rápida y Segura (-70%)")
-    CPA_BUTTON_URL: str = os.getenv("CPA_BUTTON_URL", "https://t.me/CryptoBot")
+    # Administrator Telegram Username (for direct sponsor sales & inquiries)
+    ADMIN_USERNAME: str = os.getenv("ADMIN_USERNAME", "khamidkhl")
+
+    # CPA / Sponsor Promotion Button
+    CPA_BUTTON_TEXT_EN: str = os.getenv("CPA_BUTTON_TEXT_EN", "📢 Promote Channel (Buy 1k-10k Subs)")
+    CPA_BUTTON_TEXT_RU: str = os.getenv("CPA_BUTTON_TEXT_RU", "📢 Реклама канала (Купить 1к-10к пдп)")
+    CPA_BUTTON_TEXT_UZ: str = os.getenv("CPA_BUTTON_TEXT_UZ", "📢 Kanalni reklama qilish (1k-10k obunachi)")
+    CPA_BUTTON_TEXT_ES: str = os.getenv("CPA_BUTTON_TEXT_ES", "📢 Anunciar canal (1k-10k subs)")
+    CPA_BUTTON_URL: str = os.getenv("CPA_BUTTON_URL", "https://t.me/khamidkhl")
 
     def get_cpa_button_text(self, lang: str = "en") -> str:
         lang = (lang or "en").lower()
@@ -53,6 +56,16 @@ class SharedConfig:
         elif lang == "es":
             return self.CPA_BUTTON_TEXT_ES
         return self.CPA_BUTTON_TEXT_EN
+
+    def get_cpa_button_url(self, lang: str = "en") -> str:
+        lang = (lang or "en").lower()
+        if lang == "ru":
+            return f"https://t.me/{self.ADMIN_USERNAME}?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5!%20%D0%A5%D0%BE%D1%87%D1%83%20%D0%B7%D0%B0%D0%BA%D0%B0%D0%B7%D0%B0%D1%82%D1%8C%20%D1%80%D0%B5%D0%BA%D0%BB%D0%B0%D0%BC%D1%83%2F%D1%81%D0%BF%D0%BE%D0%BD%D1%81%D0%BE%D1%80%D1%81%D1%82%D0%B2%D0%BE%20%D0%B2%20%D1%81%D0%B5%D1%82%D0%B8%20%D0%B1%D0%BE%D1%82%D0%BE%D0%B2"
+        elif lang == "uz":
+            return f"https://t.me/{self.ADMIN_USERNAME}?text=Assalomu%20alaykum!%20Botlar%20tarmog%27ida%20kanalimni%20reklama%20qilmoqchiman"
+        elif lang == "es":
+            return f"https://t.me/{self.ADMIN_USERNAME}?text=%C2%A1Hola!%20Quiero%20comprar%20publicidad%20en%20su%20red%20de%20bots"
+        return f"https://t.me/{self.ADMIN_USERNAME}?text=Hello!%20I%20want%20to%20order%20sponsorship%2Fadvertising%20in%20your%20bot%20network"
 
     def __post_init__(self):
         admin_str = os.getenv("ADMIN_IDS", "5831301324")
