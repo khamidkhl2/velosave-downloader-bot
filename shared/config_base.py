@@ -40,6 +40,12 @@ class SharedConfig:
     # Administrator Telegram Username (for direct sponsor sales & inquiries)
     ADMIN_USERNAME: str = os.getenv("ADMIN_USERNAME", "khamidkhl")
 
+    # Static / Persistent Sponsor Gate (env fallback for serverless)
+    STATIC_SPONSOR_CHANNEL: str = os.getenv("STATIC_SPONSOR_CHANNEL", "")
+    STATIC_SPONSOR_LINK: str = os.getenv("STATIC_SPONSOR_LINK", "")
+    STATIC_SPONSOR_TITLE: str = os.getenv("STATIC_SPONSOR_TITLE", "Partner Channel")
+    STATIC_SPONSOR_TARGET: int = int(os.getenv("STATIC_SPONSOR_TARGET", "1000"))
+
     # CPA / Sponsor Promotion Button
     CPA_BUTTON_TEXT_EN: str = os.getenv("CPA_BUTTON_TEXT_EN", "📢 Promote Channel (Buy 1k-10k Subs)")
     CPA_BUTTON_TEXT_RU: str = os.getenv("CPA_BUTTON_TEXT_RU", "📢 Реклама канала (Купить 1к-10к пдп)")

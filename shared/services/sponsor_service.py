@@ -26,7 +26,20 @@ class SponsorService:
 
         active_sponsors = await db.get_active_sponsors()
         if not active_sponsors:
-            return True, []
+            from shared.config_base import shared_config
+            if shared_config.STATIC_SPONSOR_CHANNEL and shared_config.STATIC_SPONSOR_LINK:
+                active_sponsors = [{
+                    "id": 999999,
+                    "channel_id": shared_config.STATIC_SPONSOR_CHANNEL,
+                    "channel_username": shared_config.STATIC_SPONSOR_CHANNEL,
+                    "title": shared_config.STATIC_SPONSOR_TITLE,
+                    "invite_link": shared_config.STATIC_SPONSOR_LINK,
+                    "target_subs": shared_config.STATIC_SPONSOR_TARGET,
+                    "delivered_subs": 0,
+                    "is_active": 1
+                }]
+            else:
+                return True, []
 
         missing_sponsors = []
         for sponsor in active_sponsors:
