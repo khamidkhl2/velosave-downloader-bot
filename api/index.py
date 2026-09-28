@@ -34,8 +34,10 @@ def get_dispatcher():
         from handlers.callbacks import router as callbacks_router
         from handlers.start import router as start_router
         from handlers.download import router as download_router
+        from shared.handlers.admin_common import admin_router
 
         _dp = Dispatcher()
+        _dp.include_router(admin_router)
         _dp.include_router(callbacks_router)
         _dp.include_router(start_router)
         _dp.include_router(download_router)

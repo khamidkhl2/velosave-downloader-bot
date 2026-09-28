@@ -375,8 +375,26 @@ class DatabaseAdapter:
                 rows = await cursor.fetchall()
                 return [dict(r) for r in rows]
 
-    async def add_sponsor(self, channel_id: str, channel_username: str, title: str, invite_link: str, target_subs: int, owner_id: int = 0) -> int:
+    async def add_sponsor(
+        self,
+        channel_id: str,
+        channel_username: Optional[str] = None,
+        title: str = "Sponsored Channel",
+        invite_link: str = "",
+        target_subs: int = 1000,
+        owner_id: int = 0,
+        **kwargs
+    ) -> int:
         now = int(time.time())
+        if not channel_username:
+            channel_username = channel_id if channel_id.startswith("@") else None
+        if "title" in kwargs:
+            title = kwargs["title"]
+        if "invite_link" in kwargs:
+            invite_link = kwargs["invite_link"]
+        if "target_subs" in kwargs:
+            target_subs = int(kwargs["target_subs"])
+
         if self.is_postgres:
             async with self.pg_pool.acquire() as conn:
                 sp_id = await conn.fetchval("""
@@ -393,6 +411,16 @@ class DatabaseAdapter:
                 """, (channel_id, channel_username, title, invite_link, target_subs, owner_id, now))
                 await db.commit()
                 return cursor.lastrowid
+
+    async def remove_sponsor(self, sponsor_id: int):
+        """Deactivates a sponsor channel from active rotation."""
+        if self.is_postgres:
+            async with self.pg_pool.acquire() as conn:
+                await conn.execute("UPDATE sponsors SET is_active = 0 WHERE id = $1", sponsor_id)
+        else:
+            async with aiosqlite.connect(self.sqlite_path) as db:
+                await db.execute("UPDATE sponsors SET is_active = 0 WHERE id = ?", (sponsor_id,))
+                await db.commit()
 
     async def record_sponsor_delivery(self, user_id: int, sponsor_id: int):
         now = int(time.time())
@@ -462,6 +490,22 @@ class DatabaseAdapter:
             "active_sponsors": active_sponsors,
             "today_actions": today_actions
         }
+
+    async def get_stats(self) -> Dict[str, Any]:
+        """Provides combined statistics for in-bot admin panels."""
+        stats = await self.get_network_stats()
+        if self.is_postgres:
+            async with self.pg_pool.acquire() as conn:
+                delivered = await conn.fetchval("SELECT SUM(delivered_subs) FROM sponsors") or 0
+        else:
+            async with aiosqlite.connect(self.sqlite_path) as db:
+                cursor = await db.execute("SELECT SUM(delivered_subs) FROM sponsors")
+                row = await cursor.fetchone()
+                delivered = row[0] if (row and row[0]) else 0
+
+        stats["total_vips"] = stats.get("vip_users", 0)
+        stats["delivered_subs"] = delivered
+        return stats
 
     # ================= Chat Session & History Persistence =================
     async def add_chat_message(self, user_id: int, role: str, content: str):
