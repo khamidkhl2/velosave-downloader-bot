@@ -7,7 +7,6 @@ from aiogram.types import Message, FSInputFile
 from shared.database.adapter import db
 from shared.services.i18n_base import t
 from shared.services.sponsor_service import sponsor_service
-from shared.services.cross_promo import cross_promo
 from shared.keyboards.common import get_sponsor_inline_keyboard, get_media_action_keyboard
 from services.downloader import downloader_service, FileSizeExceededError, MediaDownloadError
 
@@ -103,13 +102,8 @@ async def handle_url_message(message: Message):
         except Exception:
             pass
 
-        # Track usage and send separate promotional tip 1 in 2 videos (every other video)
-        dl_count = await db.increment_daily_usage(user_id, "downloader")
-        if dl_count % 2 == 0:
-            seq_idx = (dl_count // 2) - 1
-            tip_msg = cross_promo.get_alternating_tip("downloader", sequence_index=seq_idx, lang=lang)
-            if tip_msg:
-                await message.answer(tip_msg, parse_mode="HTML")
+        # Track usage
+        await db.increment_daily_usage(user_id, "downloader")
 
     except FileSizeExceededError as e:
         logger.warning(f"File size exceeded for {url}: {e.size_mb:.1f} MB")
